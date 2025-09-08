@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Crear Administrador - AguaConecta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f4fdfd;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .card-form {
+      background-color: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .card-form h2 {
+      text-align: center;
+      color: #00796b;
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      font-weight: 500;
+    }
+
+    .btn-custom {
+      background-color: #00796b;
+      color: white;
+      font-weight: bold;
+    }
+
+    .btn-custom:hover {
+      background-color: #005b4f;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      color: green;
+      font-weight: 500;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #00796b;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card-form">
+    <h2>Crear nuevo administrador</h2>
+
+    <form method="POST">
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre completo</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej. Ana Pérez" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="correo" class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" id="correo" name="correo" placeholder="admin@ejemplo.com" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="contrasena" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="contrasena" name="contrasena" placeholder="••••••••" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="area" class="form-label">Área del empleado</label>
+        <input type="text" class="form-control" id="area" name="area" placeholder="Ej. Soporte Técnico" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="tipo" class="form-label">Tipo de empleado</label>
+        <select class="form-select" id="tipo" name="tipo" required>
+          <option value="" disabled selected>Seleccione una opción</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Técnico">Técnico</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-custom w-100">✅ Crear Administrador</button>
+    </form>
+
+    {% if mensaje %}
+      <p class="message">{{ mensaje }}</p>
+    {% endif %}
+
+    <a href="{{ url_for('admin_routes.dashboard_admin') }}" class="back-link">← Regresar al panel</a>
+  </div>
+
+</body>
+</html>

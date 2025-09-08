@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        h1 {
+            font-size: 26px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .seccion {
+            margin-bottom: 8px;
+        }
+        .label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 17px;
+        }
+        .valor {
+            font-size: 16px;
+        }
+        .imagen {
+            margin-top: 15px;
+            width: 480px;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+        .mapa-link {
+            font-size: 14px;
+            color: #2980b9;
+            text-decoration: none;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte #{{ reporte['id'] }}</h1>
+
+    <div class="seccion"><span class="label">Título:</span> <span class="valor">{{ reporte['titulo'] }}</span></div>
+    <div class="seccion"><span class="label">Descripción:</span> <span class="valor">{{ reporte['descripcion'] }}</span></div>
+    <div class="seccion"><span class="label">Estado:</span> <span class="valor">{{ reporte['estado'] }}</span></div>
+    <div class="seccion"><span class="label">Fecha:</span> <span class="valor">{{ reporte['fecha'] }}</span></div>
+    <div class="seccion"><span class="label">Ciudadano:</span> <span class="valor">{{ reporte['nombre_ciudadano'] or 'No disponible' }}</span></div>
+    <div class="seccion"><span class="label">Teléfono:</span> <span class="valor">{{ reporte['telefono_ciudadano'] or 'No disponible' }}</span></div>
+    <div class="seccion"><span class="label">Dirección:</span> <span class="valor">{{ reporte['direccion'] or 'No disponible' }}</span></div>
+    <div class="seccion"><span class="label">Ubicación:</span> <span class="valor">{{ reporte['ubicacion'] or 'No disponible' }}</span></div>
+
+    {% if reporte['ubicacion'] %}
+    <div class="seccion">
+        <span class="label">Ver ubicación en Google Maps:</span>
+        <div><a class="mapa-link" href="https://www.google.com/maps/search/?api=1&query={{ reporte['ubicacion'] }}" target="_blank">
+            https://www.google.com/maps/search/?api=1&query={{ reporte['ubicacion'] }}
+        </a></div>
+    </div>
+    {% endif %}
+
+    {% if imagen_path %}
+    <div class="seccion">
+        <span class="label">Imagen:</span><br>
+        <img class="imagen" src="{{ imagen_path }}" alt="Imagen del reporte">
+    </div>
+    {% else %}
+    <div class="seccion"><span class="label">Imagen:</span> No disponible</div>
+    {% endif %}
+</body>
+</html>

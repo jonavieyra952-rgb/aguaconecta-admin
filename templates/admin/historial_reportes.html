@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial de Reportes Archivados</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #f4fdfd;
+    }
+    .custom-btn {
+      background-color: #00796b;
+      color: white;
+    }
+    img {
+      width: 100px;
+      height: auto;
+    }
+    iframe {
+      border: none;
+      width: 100%;
+      min-width: 250px;
+      height: 200px;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .text-primary {
+      color: #00796b !important;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <div class="d-flex justify-content-between mb-3 align-items-center">
+    <h2 class="text-primary">Historial de Reportes Archivados</h2>
+    <a href="{{ url_for('admin_routes.panel_reportes') }}" class="btn custom-btn fw-bold">← Volver a Reportes</a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if reportes %}
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Nombre del Ciudadano</th>
+          <th>Teléfono</th>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Ubicación</th>
+          <th>Mapa</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Imagen</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reporte in reportes %}
+        <tr>
+          <td>{{ reporte.id }}</td>
+          <td>{{ reporte.usuario_id }}</td>
+          <td>{{ reporte.nombre_ciudadano or 'No disponible' }}</td>
+          <td>{{ reporte.telefono_ciudadano or 'No disponible' }}</td>
+          <td>{{ reporte.titulo }}</td>
+          <td>{{ reporte.descripcion }}</td>
+          <td>{{ reporte.direccion or 'No disponible' }}</td>
+          <td style="min-width: 300px;">
+            {% if reporte.ubicacion and ',' in reporte.ubicacion %}
+              {% set latlon = reporte.ubicacion.split(',') %}
+              {% if latlon|length == 2 %}
+                {% set lat = latlon[0]|trim %}
+                {% set lon = latlon[1]|trim %}
+                {% if lat and lon %}
+                  <iframe src="https://www.openstreetmap.org/export/embed.html?bbox={{ lon|float - 0.001 }},{{ lat|float - 0.001 }},{{ lon|float + 0.001 }},{{ lat|float + 0.001 }}&layer=mapnik&marker={{ lat }},{{ lon }}"></iframe>
+                  <div class="d-flex flex-wrap gap-2 mt-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="abrirMapaModal({{ lat }}, {{ lon }})">
+                      <i class="bi bi-arrows-fullscreen"></i> Ampliar
+                    </button>
+                    <a class="btn btn-outline-success btn-sm" target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ lat }},{{ lon }}">
+                      <i class="bi bi-geo-alt"></i> Google Maps
+                    </a>
+                  </div>
+                {% else %}
+                  <span class="text-danger">Coordenadas mal formateadas</span>
+                {% endif %}
+              {% else %}
+                <span class="text-danger">Coordenadas mal formateadas</span>
+              {% endif %}
+            {% else %}
+              <span>No disponible</span>
+            {% endif %}
+          </td>
+          <td>{{ reporte.estado }}</td>
+          <td>{{ reporte.fecha }}</td>
+          <td>
+            {% if reporte.imagen %}
+              <img src="{{ url_for('static', filename='uploads/' ~ reporte.imagen) }}" alt="Imagen del reporte">
+            {% else %}
+              <span>Sin imagen</span>
+            {% endif %}
+          </td>
+          <td>
+            <form action="{{ url_for('admin_routes.desarchivar_reporte', reporte_id=reporte.id) }}" method="POST" onsubmit="return confirm('¿Deseas desarchivar este reporte?');">
+              <button type="submit" class="btn btn-success btn-sm">📤 Desarchivar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p>No hay reportes archivados.</p>
+  {% endif %}
+
+  <!-- 🔍 Modal para ampliar mapa -->
+  <div class="modal fade" id="mapaModal" tabindex="-1" aria-labelledby="mapaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="mapaModalLabel">Mapa Ampliado</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <iframe id="iframe-mapa-ampliado" src="" width="100%" height="500" frameborder="0" loading="lazy"></iframe>
+          <div class="text-end mt-3">
+            <a id="btn-google-maps" href="#" class="btn btn-success" target="_blank">
+              <i class="bi bi-geo-alt-fill"></i> Ver en Google Maps
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function abrirMapaModal(lat, lon) {
+  const iframeSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${lon - 0.005},${lat - 0.005},${lon + 0.005},${lat + 0.005}&layer=mapnik&marker=${lat},${lon}`;
+  document.getElementById('iframe-mapa-ampliado').src = iframeSrc;
+  document.getElementById('btn-google-maps').href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+  new bootstrap.Modal(document.getElementById('mapaModal')).show();
+}
+</script>
+
+</body>
+</html>

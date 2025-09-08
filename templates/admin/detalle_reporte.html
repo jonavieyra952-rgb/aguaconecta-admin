@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle del Reporte</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+  <h3 class="mb-4">Detalle del Reporte Atendido</h3>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">ID del Reporte: {{ reporte.id }}</h5>
+      <p class="card-text"><strong>Descripción:</strong> {{ reporte.descripcion }}</p>
+      <p class="card-text"><strong>Fecha:</strong> {{ reporte.fecha }}</p>
+      <p class="card-text"><strong>Estado:</strong> {{ reporte.estado }}</p>
+      <p class="card-text"><strong>Dirección:</strong> {{ reporte.direccion }}</p>
+
+      {% if reporte.imagen %}
+        <p><strong>Imagen:</strong></p>
+        <img src="{{ url_for('static', filename='uploads/' + reporte.imagen) }}" alt="Imagen del reporte" class="img-fluid rounded" style="max-width: 400px;">
+      {% else %}
+        <p class="text-muted">Este reporte no tiene imagen adjunta.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <a href="{{ url_for('admin_routes.reportes_atendidos', nombre_admin=reporte.atendido_por) }}" class="btn btn-secondary mt-3">Volver</a>
+</body>
+</html>
